@@ -10,10 +10,11 @@ accelerate>=0.25.0
 trl>=0.7.0
 bitsandbytes>=0.41.0
 
-# LangChain / LangGraph
+# LangChain / LangGraph (usado no Step 5 – assistente; opcional para fine-tuning e avaliação)
 langchain>=0.1.0
 langchain-community>=0.0.20
-langgraph>=0.0.20
+# langgraph: versão no PyPI (0.0.8) está yanked. Instale depois quando for fazer o assistente:
+#   pip install langgraph   ou  pip install git+https://github.com/langchain-ai/langgraph.git
 langchain-huggingface>=0.0.1
 
 # Evaluation / utils

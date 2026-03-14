@@ -137,8 +137,9 @@ Objetivos do hospital:
    - Garantir que o modelo fine-tunado fique acessível (Hugging Face ou caminho documentado).
 
 4. **Avaliação do modelo**  
-   - Script de inferência no test set PubMedQA.  
-   - Uso de `evaluation.py` (ou portar métricas) e registro no relatório.
+   - Script de inferência no test set PubMedQA: `scripts/run_evaluate.py` (carrega modelo PEFT, roda em `data/test.jsonl`, gera `predictions.json`).  
+   - Métricas (Accuracy, Macro-F1) em `src/models/evaluate_pqal.py`; formato compatível com `evaluation.py` do PubMedQA. Opcional: `scripts/compute_metrics.py` para calcular métricas a partir de um `predictions.json` existente.  
+   - Registrar os resultados no relatório técnico.
 
 5. **Assistente com LangChain**  
    - Módulo que carrega a LLM fine-tunada.  

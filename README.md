@@ -107,9 +107,31 @@ O **modelo final** (adaptador PEFT + tokenizer) é salvo em `outputs/finetune_pq
 
 O notebook usa a mesma pipeline do script e documenta no topo a escolha do modelo. Ao final, o modelo fine-tunado fica em `outputs/finetune_pqal/` (local ou no Drive, conforme configurado).
 
+## Avaliação do modelo (Step 4)
+
+Depois do fine-tuning, avalie no test set PubMedQA (Accuracy e Macro-F1):
+
+```bash
+cd POSTECH-FIAP-FASE3
+python scripts/run_evaluate.py
+```
+
+O script carrega o modelo em `outputs/finetune_pqal/` (ou `--model-dir`), roda inferência em `data/test.jsonl`, extrai a decisão (yes/no/maybe) de cada resposta e grava:
+- `outputs/eval/predictions.json` — PMID → decisão (formato do evaluation.py do PubMedQA)
+- `outputs/eval/metrics.json` — accuracy e macro_f1
+
+Para usar só um arquivo de predições já gerado:
+
+```bash
+python scripts/compute_metrics.py data/test_ground_truth.json outputs/eval/predictions.json
+```
+
+Se o modelo estiver em um checkpoint (ex.: `outputs/finetune_pqal/checkpoint-153/`), use `--model-dir outputs/finetune_pqal/checkpoint-153`.
+
 ## Próximos passos
 
 1. ~~Preparar dados (preprocessamento, split).~~
 2. ~~Fine-tuning da LLM (script + notebook Colab).~~
-3. Assistente com LangChain e fluxos LangGraph.
-4. Ver `PLANO_DESENVOLVIMENTO_FASE3.md` para o plano completo e entregáveis.
+3. ~~Avaliação do modelo no test set (inferência + métricas).~~
+4. Assistente com LangChain e fluxos LangGraph.
+5. Ver `PLANO_DESENVOLVIMENTO_FASE3.md` para o plano completo e entregáveis.
