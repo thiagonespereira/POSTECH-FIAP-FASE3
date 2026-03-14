@@ -67,6 +67,7 @@ def main() -> None:
 
     n = args.max_samples or "todos"
     print(f"Carregando modelo e rodando inferência no test set (amostras: {n})...")
+    print("(Inferência é sequencial; pode demorar vários minutos. Use --max-samples N para teste rápido.)")
     metrics = evaluate(
         model_dir=args.model_dir,
         data_dir=args.data_dir,

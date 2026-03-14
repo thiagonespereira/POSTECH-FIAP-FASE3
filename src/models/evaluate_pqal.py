@@ -62,8 +62,13 @@ def run_inference(
     Roda inferência para cada registro. record deve ter 'instruction', 'input', 'pmid'.
     Retorna dict pmid -> decisão (yes/no/maybe).
     """
+    try:
+        from tqdm import tqdm
+        iterator = tqdm(records, desc="Inferência", unit="ex")
+    except ImportError:
+        iterator = records
     predictions = {}
-    for rec in records:
+    for rec in iterator:
         pmid = rec.get("pmid")
         if not pmid:
             continue
@@ -194,6 +199,8 @@ def evaluate(
     records = load_test_records(test_path)
     if max_samples is not None:
         records = records[: max_samples]
+    n_records = len(records)
+    print(f"Test set: {n_records} exemplos. Inferência um por vez (pode demorar vários minutos).")
     predictions = run_inference(model, tokenizer, records, max_new_tokens=max_new_tokens)
 
     with open(gt_path) as f:
