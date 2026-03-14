@@ -94,7 +94,7 @@ Objetivos do hospital:
 
 ## 4. Dataset PubMedQA (PQA-L)
 
-- **Local:** `solution2/data/ori_pqal.json` (já copiado de `FASE3/pubmedqa-master/data/`).
+- **Local:** `data/ori_pqal.json` na raiz do repositório (copiado de `FASE3/pubmedqa-master/data/`).
 - **Estrutura por PMID:**
   - `QUESTION`: pergunta clínica.
   - `CONTEXTS`: lista de abstracts/trechos.
@@ -122,7 +122,7 @@ Objetivos do hospital:
 
 ## 6. Plano de execução (ordem sugerida)
 
-1. **Setup do projeto (solution2)**  
+1. **Setup do projeto**  
    - Estrutura de pastas (ex.: `data/`, `src/`, `scripts/`, `notebooks/`).  
    - `requirements.txt` e README mínimo.
 
@@ -158,10 +158,10 @@ Objetivos do hospital:
 
 ---
 
-## 7. Estrutura de pastas sugerida (solution2)
+## 7. Estrutura de pastas (repositório)
 
 ```
-solution2/
+POSTECH-FIAP-FASE3/
 ├── data/
 │   └── ori_pqal.json          # já copiado
 ├── src/                       # código modular
@@ -185,7 +185,7 @@ solution2/
 
 ## 8. Resumo
 
-- **Dataset:** PubMedQA em `solution2/data/ori_pqal.json` (1000 instâncias).  
+- **Dataset:** PubMedQA em `data/ori_pqal.json` (1000 instâncias).  
 - **Fine-tuning:** script `.py` + notebook Colab para uso de GPU e acesso ao modelo fine-tunado.  
 - **Entregas:** repositório (código + dataset anonimizado/sintético + README), relatório técnico e vídeo de até 15 minutos.  
 - **Referências:** PDF da Fase 3, notebooks e scripts em `FASE3` (fine-tuning, RAG, LangChain, LangGraph, PubMedQA split e avaliação).

@@ -167,7 +167,7 @@ def run_finetune(
 
 if __name__ == "__main__":
     import argparse
-    # Garantir que solution2 está no path (para importar config)
+    # Garantir que a raiz do projeto está no path (para importar config)
     _root = Path(__file__).resolve().parent.parent.parent
     if str(_root) not in __import__("sys").path:
         __import__("sys").path.insert(0, str(_root))

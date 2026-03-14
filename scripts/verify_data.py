@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Verifica consistência dos arquivos gerados pela preparação do dataset (Step 2).
-Uso: cd solution2 && python scripts/verify_data.py
+Uso: cd POSTECH-FIAP-FASE3 && python scripts/verify_data.py
 """
 import json
 import sys

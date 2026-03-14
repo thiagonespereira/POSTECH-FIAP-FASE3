@@ -178,7 +178,7 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Prepara dataset PubMedQA PQA-L para fine-tuning.")
-    # Project root = solution2 (parent of src)
+    # Project root = POSTECH-FIAP-FASE3 (parent of config)
     _project_root = Path(__file__).resolve().parent.parent.parent
     parser.add_argument(
         "--data-dir",

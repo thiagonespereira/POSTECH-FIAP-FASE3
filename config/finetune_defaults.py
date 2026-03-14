@@ -40,7 +40,7 @@ from pathlib import Path
 MODEL_NAME = "Qwen/Qwen2.5-0.5B-Instruct"
 
 # Onde salvar checkpoints e adaptador PEFT
-PROJECT_ROOT = Path(__file__).resolve().parent.parent  # solution2
+PROJECT_ROOT = Path(__file__).resolve().parent.parent  # POSTECH-FIAP-FASE3
 DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "outputs" / "finetune_pqal"
 DEFAULT_DATA_DIR = PROJECT_ROOT / "data"
 

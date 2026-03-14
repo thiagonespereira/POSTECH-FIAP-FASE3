@@ -1,11 +1,11 @@
-# Solution2 – Assistente médico (Tech Challenge IADT Fase 3)
+# POSTECH-FIAP-FASE3 – Assistente médico (Tech Challenge IADT Fase 3)
 
 Assistente virtual médico com LLM fine-tunada em dados clínicos (PubMedQA) e integração LangChain/LangGraph.
 
 ## Estrutura do projeto
 
 ```
-solution2/
+POSTECH-FIAP-FASE3/
 ├── data/                 # Dataset (ori_pqal.json)
 ├── src/                  # Código modular
 │   ├── data/             # Preparação e split
@@ -39,7 +39,7 @@ pip install -r requirements.txt
 Gera train/dev/test em formato de instrução e dataset anonimizado para entrega:
 
 ```bash
-cd solution2
+cd POSTECH-FIAP-FASE3
 python scripts/run_prepare_data.py
 ```
 
@@ -59,7 +59,7 @@ python -m src.data.prepare_pqal --data-dir data --format instruction --dev-ratio
 O script `scripts/verify_data.py` valida a consistência dos arquivos gerados pela preparação (contagens, formato, ausência de sobreposição entre train/dev/test e conformidade do dataset anonimizado). Útil para quem for avaliar o projeto conferir se os dados estão corretos após rodar a preparação.
 
 ```bash
-cd solution2
+cd POSTECH-FIAP-FASE3
 python scripts/verify_data.py
 ```
 
@@ -83,7 +83,7 @@ O modelo padrão é **Qwen/Qwen2.5-0.5B-Instruct**. A escolha está documentada 
 Requisitos: dados preparados (`data/train.jsonl`, `data/dev.jsonl`) e GPU com VRAM suficiente (recomendado 8+ GB; 4-bit recomendado para ~15 GB).
 
 ```bash
-cd solution2
+cd POSTECH-FIAP-FASE3
 python scripts/train_finetune.py
 ```
 
@@ -98,10 +98,12 @@ O **modelo final** (adaptador PEFT + tokenizer) é salvo em `outputs/finetune_pq
 
 ### Rodar no Google Colab
 
+**Abrir o notebook:** No Cursor/VS Code, use a extensão **Jupyter** e abra `notebooks/finetune_medical_llm.ipynb` (clique no arquivo ou botão “Open in Notebook Editor”). Se abrir como JSON, clique com o botão direito no arquivo → **Open With** → **Jupyter Notebook**. No Colab: *File → Upload notebook* ou faça clone do repositório e abra o `.ipynb`.
+
 1. Ative a GPU: *Runtime → Change runtime type → Hardware accelerator: GPU*.
-2. Coloque a pasta **solution2** no Google Drive (com `data/`, `src/`, `config/`, `scripts/` e os arquivos `train.jsonl` e `dev.jsonl` em `data/`).
-3. Abra o notebook **`notebooks/finetune_medical_llm.ipynb`** no Colab (upload do arquivo ou clone do repositório).
-4. Execute as células: montar Drive, instalar dependências, copiar solution2 para `/content`, rodar o treino, e (opcional) copiar a pasta de saída de volta para o Drive.
+2. **Recomendado:** Rode as células em ordem. A célula **"2. Clonar o repositório do GitHub"** clona o repo em `/content/POSTECH-FIAP-FASE3`. Se já houver `data/train.jsonl` e `data/dev.jsonl`, siga para o fine-tuning; senão, use a célula opcional para gerar a partir de `ori_pqal.json` ou faça upload manual.
+3. Alternativa: coloque a pasta **POSTECH-FIAP-FASE3** no Google Drive e use a célula "Preparar ambiente" apontando para o Drive.
+4. Execute as células: montar Drive (opcional), instalar dependências, **clonar o repo**, preparar ambiente (se necessário), rodar o treino e (opcional) copiar o modelo para o Drive.
 
 O notebook usa a mesma pipeline do script e documenta no topo a escolha do modelo. Ao final, o modelo fine-tunado fica em `outputs/finetune_pqal/` (local ou no Drive, conforme configurado).
 

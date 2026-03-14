@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
 Roda a preparação do dataset PubMedQA (Step 2).
-Execute a partir da raiz do projeto (solution2):
+Execute a partir da raiz do projeto (POSTECH-FIAP-FASE3):
 
-    cd solution2
+    cd POSTECH-FIAP-FASE3
     python scripts/run_prepare_data.py
 
 Ou como módulo:
@@ -13,7 +13,7 @@ Ou como módulo:
 import sys
 from pathlib import Path
 
-# Garante que solution2 está no path
+# Garante que a raiz do projeto está no path
 _project_root = Path(__file__).resolve().parent.parent
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))

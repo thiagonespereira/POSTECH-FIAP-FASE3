@@ -2,9 +2,9 @@
 """
 Script de fine-tuning do modelo médico (Step 3).
 
-Execute a partir da raiz do projeto (solution2):
+Execute a partir da raiz do projeto (POSTECH-FIAP-FASE3):
 
-    cd solution2
+    cd POSTECH-FIAP-FASE3
     python scripts/train_finetune.py
 
 Ou com argumentos:
