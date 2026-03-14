@@ -129,34 +129,40 @@ def run_finetune(
     model.print_trainable_parameters()
 
     # SFT training args (dataset com colunas "prompt" e "completion")
-    training_args = SFTConfig(
-        output_dir=str(output_dir),
-        num_train_epochs=num_epochs,
-        per_device_train_batch_size=batch_size,
-        per_device_eval_batch_size=batch_size,
-        gradient_accumulation_steps=gradient_accumulation_steps,
-        learning_rate=learning_rate,
-        weight_decay=weight_decay,
-        warmup_ratio=warmup_ratio,
-        logging_steps=logging_steps,
-        save_strategy=save_strategy,
-        save_total_limit=save_total_limit,
-        bf16=True,
-        max_seq_length=max_seq_length,
-        dataset_text_field=None,
-        dataset_num_proc=1,
-        packing=False,
-        completion_only_loss=True,
-    )
+    # TRL recente usa max_length em SFTConfig; versões antigas usavam max_seq_length
+    _sft_kw: dict = {
+        "output_dir": str(output_dir),
+        "num_train_epochs": num_epochs,
+        "per_device_train_batch_size": batch_size,
+        "per_device_eval_batch_size": batch_size,
+        "gradient_accumulation_steps": gradient_accumulation_steps,
+        "learning_rate": learning_rate,
+        "weight_decay": weight_decay,
+        "warmup_ratio": warmup_ratio,
+        "logging_steps": logging_steps,
+        "save_strategy": save_strategy,
+        "save_total_limit": save_total_limit,
+        "bf16": True,
+    }
+    try:
+        training_args = SFTConfig(max_length=max_seq_length, **_sft_kw)
+    except TypeError:
+        training_args = SFTConfig(max_seq_length=max_seq_length, **_sft_kw)
 
-    trainer = SFTTrainer(
-        model=model,
-        args=training_args,
-        train_dataset=train_dataset,
-        eval_dataset=eval_dataset,
-        processing_class=tokenizer,
-        max_seq_length=max_seq_length,
-    )
+    _trainer_kw: dict = {
+        "model": model,
+        "args": training_args,
+        "train_dataset": train_dataset,
+        "eval_dataset": eval_dataset,
+        "processing_class": tokenizer,
+    }
+    try:
+        trainer = SFTTrainer(max_seq_length=max_seq_length, **_trainer_kw)
+    except TypeError:
+        try:
+            trainer = SFTTrainer(max_length=max_seq_length, **_trainer_kw)
+        except TypeError:
+            trainer = SFTTrainer(**_trainer_kw)
 
     trainer.train()
     trainer.save_model(str(output_dir))
