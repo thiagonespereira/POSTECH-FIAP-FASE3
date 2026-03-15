@@ -23,12 +23,20 @@ POSTECH-FIAP-FASE3/
 
 ## Ambiente
 
+Recomendado: **Python 3.9+** (obrigatório para o Step 6 – LangGraph; o restante do projeto roda em 3.8).
+
 ```bash
-python -m venv .venv
+python3.9 -m venv .venv   # ou python3.10 / python3.11
 source .venv/bin/activate   # Linux/macOS
 # ou: .venv\Scripts\activate  # Windows
 pip install -r requirements.txt
 ```
+
+Nos exemplos abaixo, os comandos usam o Python do venv: **`.venv/bin/python`** (Linux/macOS). No Windows, ative o venv e use `python`.
+
+**GPU (CUDA):** Para rodar o assistente (Step 5) e o grafo LangGraph (Step 6) com o modelo fine-tunado (adaptador PEFT/QLoRA), é recomendado ambiente com **GPU e drivers CUDA**. Em máquina só CPU, o carregamento do adaptador pode falhar (bitsandbytes/Triton esperam um driver ativo). Preparação de dados, avaliação off-line e scripts que não carregam o modelo PEFT funcionam em CPU.
+
+**Se `pip install -r requirements.txt` falhar ao compilar pyarrow** (erro tipo "cmake failed" ou "CMake 3.25 or higher is required"): o projeto fixa `pyarrow>=14.0.0,<17` para usar wheel pré-compilado. Se ainda tentar compilar, instale CMake 3.25+ ou use um ambiente com Python 3.10+ onde wheels estão mais disponíveis.
 
 ## Dataset
 
@@ -40,13 +48,13 @@ Gera train/dev/test em formato de instrução e dataset anonimizado para entrega
 
 ```bash
 cd POSTECH-FIAP-FASE3
-python scripts/run_prepare_data.py
+.venv/bin/python scripts/run_prepare_data.py
 ```
 
 Ou com opções:
 
 ```bash
-python -m src.data.prepare_pqal --data-dir data --format instruction --dev-ratio 0.2
+.venv/bin/python -m src.data.prepare_pqal --data-dir data --format instruction --dev-ratio 0.2
 ```
 
 **Saídas em `data/`:**
@@ -60,7 +68,7 @@ O script `scripts/verify_data.py` valida a consistência dos arquivos gerados pe
 
 ```bash
 cd POSTECH-FIAP-FASE3
-python scripts/verify_data.py
+.venv/bin/python scripts/verify_data.py
 ```
 
 Se tudo estiver correto, o script termina com **All checks passed.**; caso contrário, lista as falhas e encerra com código 1.
@@ -84,14 +92,14 @@ Requisitos: dados preparados (`data/train.jsonl`, `data/dev.jsonl`) e GPU com VR
 
 ```bash
 cd POSTECH-FIAP-FASE3
-python scripts/train_finetune.py
+.venv/bin/python scripts/train_finetune.py
 ```
 
 Opções úteis:
 
 ```bash
-python scripts/train_finetune.py --data-dir data --output-dir outputs/finetune_pqal --epochs 3
-python scripts/train_finetune.py --no-4bit   # precisão total (mais VRAM)
+.venv/bin/python scripts/train_finetune.py --data-dir data --output-dir outputs/finetune_pqal --epochs 3
+.venv/bin/python scripts/train_finetune.py --no-4bit   # precisão total (mais VRAM)
 ```
 
 O **modelo final** (adaptador PEFT + tokenizer) é salvo em `outputs/finetune_pqal/` (ou no `--output-dir` indicado). Para inferência, carregue o modelo base e o adaptador desse diretório (veja exemplos no código em `src/models/`).
@@ -113,7 +121,7 @@ Depois do fine-tuning, avalie no test set PubMedQA (Accuracy e Macro-F1):
 
 ```bash
 cd POSTECH-FIAP-FASE3
-python scripts/run_evaluate.py
+.venv/bin/python scripts/run_evaluate.py
 ```
 
 O script carrega o modelo em `outputs/finetune_pqal/` (ou `--model-dir`), roda inferência em `data/test.jsonl`, extrai a decisão (yes/no/maybe) de cada resposta e grava:
@@ -123,7 +131,7 @@ O script carrega o modelo em `outputs/finetune_pqal/` (ou `--model-dir`), roda i
 Para usar só um arquivo de predições já gerado:
 
 ```bash
-python scripts/compute_metrics.py data/test_ground_truth.json outputs/eval/predictions.json
+.venv/bin/python scripts/compute_metrics.py data/test_ground_truth.json outputs/eval/predictions.json
 ```
 
 Se o modelo estiver em um checkpoint (ex.: `outputs/finetune_pqal/checkpoint-153/`), use `--model-dir outputs/finetune_pqal/checkpoint-153`.
@@ -134,13 +142,34 @@ O assistente usa o modelo fine-tunado via LangChain: pergunta clínica → (opci
 
 ```bash
 # Primeiro exemplo do test set (pergunta + abstracts)
-python scripts/run_assistant.py
+.venv/bin/python scripts/run_assistant.py
 
 # Pergunta e contexto customizados
-python scripts/run_assistant.py --pergunta "Can the PHQ-9 assess depression in people with vision loss?" --contexto "The PHQ-9 was completed by 103 participants with low vision."
+.venv/bin/python scripts/run_assistant.py --pergunta "Can the PHQ-9 assess depression in people with vision loss?" --contexto "The PHQ-9 was completed by 103 participants with low vision."
 ```
 
 Documentação completa: **`docs/assistente_langchain_step5.md`** (componentes, exemplos de comando, segurança e explainability).
+
+## Fluxos LangGraph (Step 6)
+
+**Requisito:** Python 3.9 ou superior (o pacote LangGraph usa tipagem que não existe em 3.8).
+
+O assistente também pode ser executado como um grafo LangGraph: pergunta → classificar intenção → buscar contexto (stub) → gerar resposta (mesmo modelo) → validar → log. O histórico de passos fica no estado (`historico`).
+
+```bash
+# Primeiro exemplo do test set
+.venv/bin/python scripts/run_graph_assistant.py
+
+# Pergunta e contexto customizados
+.venv/bin/python scripts/run_graph_assistant.py --pergunta "Can the PHQ-9 assess depression in people with vision loss?" --contexto "The PHQ-9 was completed by 103 participants."
+
+# Ver estrutura do grafo em ASCII
+.venv/bin/python scripts/run_graph_assistant.py --draw --pergunta "Test?"
+```
+
+Documentação: **`docs/langgraph_step6.md`**.
+
+**Rodar no Google Colab (com GPU):** use o notebook **`notebooks/run_graph_assistant_colab.ipynb`**. Abra no Colab, ative a GPU, clone o repositório, instale as dependências e aponte o caminho do modelo (ex.: `outputs/finetune_pqal` no clone ou no Drive).
 
 ## Próximos passos
 
@@ -148,5 +177,5 @@ Documentação completa: **`docs/assistente_langchain_step5.md`** (componentes, 
 2. ~~Fine-tuning da LLM (script + notebook Colab).~~
 3. ~~Avaliação do modelo no test set (inferência + métricas).~~
 4. ~~Assistente com LangChain (chain, script, documentação).~~
-5. Fluxos LangGraph (Step 6).
+5. ~~Fluxos LangGraph (Step 6).~~
 6. Ver `PLANO_DESENVOLVIMENTO_FASE3.md` para o plano completo e entregáveis.

@@ -5,7 +5,33 @@ Usado pelo assistente médico (Step 5): pipeline text-generation → HuggingFace
 """
 from pathlib import Path
 import json
+import sys
+import types
 from typing import Optional
+
+# Stub triton.ops se ausente (bitsandbytes 0.42 exige triton.ops.matmul_perf_model; triton novo removeu)
+def _ensure_triton_ops_stub():
+    try:
+        from triton.ops.matmul_perf_model import early_config_prune, estimate_matmul_time  # noqa: F401
+        return
+    except (ImportError, ModuleNotFoundError):
+        pass
+    triton = sys.modules.get("triton")
+    if triton is None:
+        triton = types.ModuleType("triton")
+        sys.modules["triton"] = triton
+    if not hasattr(triton, "ops"):
+        triton_ops = types.ModuleType("triton.ops")
+        triton.ops = triton_ops
+        sys.modules["triton.ops"] = triton_ops
+    if "triton.ops.matmul_perf_model" not in sys.modules:
+        matmul_perf = types.ModuleType("triton.ops.matmul_perf_model")
+        matmul_perf.early_config_prune = lambda *a, **k: None
+        matmul_perf.estimate_matmul_time = lambda *a, **k: 0.0
+        sys.modules["triton.ops.matmul_perf_model"] = matmul_perf
+
+
+_ensure_triton_ops_stub()
 
 import torch
 
@@ -35,7 +61,10 @@ def load_llm_langchain(
     else:
         base_model_name = "Qwen/Qwen2.5-0.5B-Instruct"
 
-    tokenizer = AutoTokenizer.from_pretrained(model_dir, trust_remote_code=True)
+    # Tokenizer do modelo base (model_dir pode ter só adapter; tokenizer completo vem da base)
+    tokenizer = AutoTokenizer.from_pretrained(
+        base_model_name, trust_remote_code=True
+    )
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
