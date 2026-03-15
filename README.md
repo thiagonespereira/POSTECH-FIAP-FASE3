@@ -128,10 +128,25 @@ python scripts/compute_metrics.py data/test_ground_truth.json outputs/eval/predi
 
 Se o modelo estiver em um checkpoint (ex.: `outputs/finetune_pqal/checkpoint-153/`), use `--model-dir outputs/finetune_pqal/checkpoint-153`.
 
+## Assistente com LangChain (Step 5)
+
+O assistente usa o modelo fine-tunado via LangChain: pergunta clínica → (opcional) contexto (abstracts) → LLM → resposta, com disclaimer e indicação de fonte.
+
+```bash
+# Primeiro exemplo do test set (pergunta + abstracts)
+python scripts/run_assistant.py
+
+# Pergunta e contexto customizados
+python scripts/run_assistant.py --pergunta "Can the PHQ-9 assess depression in people with vision loss?" --contexto "The PHQ-9 was completed by 103 participants with low vision."
+```
+
+Documentação completa: **`docs/assistente_langchain_step5.md`** (componentes, exemplos de comando, segurança e explainability).
+
 ## Próximos passos
 
 1. ~~Preparar dados (preprocessamento, split).~~
 2. ~~Fine-tuning da LLM (script + notebook Colab).~~
 3. ~~Avaliação do modelo no test set (inferência + métricas).~~
-4. Assistente com LangChain e fluxos LangGraph.
-5. Ver `PLANO_DESENVOLVIMENTO_FASE3.md` para o plano completo e entregáveis.
+4. ~~Assistente com LangChain (chain, script, documentação).~~
+5. Fluxos LangGraph (Step 6).
+6. Ver `PLANO_DESENVOLVIMENTO_FASE3.md` para o plano completo e entregáveis.
