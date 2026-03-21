@@ -21,6 +21,8 @@ POSTECH-FIAP-FASE3/
 └── PLANO_DESENVOLVIMENTO_FASE3.md
 ```
 
+**Mapeamento PDF do desafio → arquivos (.py / .ipynb):** `docs/MAPEAMENTO_ENTREGAS_TECH_CHALLENGE_FASE3.md` (referência: `FASE3/Tech Challenge IADT - Fase 3.pdf`).
+
 ## Ambiente
 
 Recomendado: **Python 3.9+** (obrigatório para o Step 6 – LangGraph; o restante do projeto roda em 3.8).
