@@ -167,6 +167,8 @@ O assistente também pode ser executado como um grafo LangGraph: pergunta → cl
 .venv/bin/python scripts/run_graph_assistant.py --draw --pergunta "Test?"
 ```
 
+Para `--draw` / `draw_ascii()`, instale também **`grandalf`** (está em `requirements.txt`; sem ele ocorre `ImportError` pedindo `pip install grandalf`).
+
 Documentação: **`docs/langgraph_step6.md`**.
 
 **Rodar no Google Colab (com GPU):** use o notebook **`notebooks/run_graph_assistant_colab.ipynb`**. Abra no Colab, ative a GPU, clone o repositório, instale as dependências e aponte o caminho do modelo (ex.: `outputs/finetune_pqal` no clone ou no Drive).

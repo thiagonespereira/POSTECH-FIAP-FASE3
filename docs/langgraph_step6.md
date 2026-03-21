@@ -51,6 +51,8 @@ Usa o primeiro registro de `data/test.jsonl` (pergunta + abstracts) e imprime a 
 
 ### Ver estrutura do grafo (ASCII)
 
+Requer o pacote **`grandalf`** (incluído em `requirements.txt`; `pip install grandalf` se faltar). Sem ele, `get_graph().draw_ascii()` levanta `ImportError`.
+
 ```bash
 .venv/bin/python scripts/run_graph_assistant.py --draw --pergunta "Test?"
 ```
