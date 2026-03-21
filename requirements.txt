@@ -1,20 +1,26 @@
 # Core
 python-dotenv>=1.0.0
+protobuf>=3.20.0
 
 # Fine-tuning (LLM)
 torch>=2.0.0
 transformers>=4.36.0
 datasets>=2.14.0
+# Evitar compilar pyarrow (exige CMake 3.25+); usar wheel pré-compilado
+pyarrow>=14.0.0,<17
 peft>=0.7.0
 accelerate>=0.25.0
 trl>=0.7.0
 bitsandbytes>=0.41.0
+# Se der "No module named 'triton.ops'" ao carregar modelo: pip install "triton>=2.0,<3"
 
 # LangChain / LangGraph (usado no Step 5 – assistente; opcional para fine-tuning e avaliação)
+# langchain-core: PromptTemplate e runnables (LangChain 0.3+ não expõe langchain.prompts)
+langchain-core>=0.2.0
 langchain>=0.1.0
 langchain-community>=0.0.20
-# langgraph: versão no PyPI (0.0.8) está yanked. Instale depois quando for fazer o assistente:
-#   pip install langgraph   ou  pip install git+https://github.com/langchain-ai/langgraph.git
+# Step 6 – Fluxos LangGraph (PyPI; exige Python 3.9+)
+langgraph>=0.2.0
 langchain-huggingface>=0.0.1
 
 # Evaluation / utils

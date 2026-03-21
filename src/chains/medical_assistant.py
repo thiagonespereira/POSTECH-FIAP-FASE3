@@ -22,8 +22,8 @@ def build_medical_chain(llm, *, max_new_tokens: int = 256):
     O formato do prompt segue o usado no treino/avaliação (instruction + input)
     para que o modelo retorne resposta evidence-based e "Decision: yes/no/maybe".
     """
-    from langchain.prompts import PromptTemplate
-    from langchain.chains import LLMChain
+    # LangChain 0.3+: prompts em langchain_core; LLMChain substituído por LCEL (prompt | llm)
+    from langchain_core.prompts import PromptTemplate
 
     instruction = (
         "Based on the following medical literature abstracts, answer the clinical question. "
@@ -34,7 +34,7 @@ def build_medical_chain(llm, *, max_new_tokens: int = 256):
         input_variables=["instruction", "input_text"],
         template=template,
     )
-    chain = LLMChain(llm=llm, prompt=prompt, verbose=False)
+    chain = prompt | llm
     return chain, instruction
 
 
@@ -60,9 +60,11 @@ def ask(
         source_note = " (Resposta sem contexto adicional.)"
 
     out = chain.invoke({"instruction": instruction, "input_text": input_text})
-    # LLMChain.invoke retorna dict com output_key (default "text")
+    # LCEL (prompt|llm) pode retornar str; LLMChain antigo retornava dict com "text"
     if isinstance(out, dict):
         response = out.get("text", out.get("output", str(out)))
+    elif hasattr(out, "content"):
+        response = out.content
     else:
         response = out
     text = (response.strip() if isinstance(response, str) else str(response).strip())
