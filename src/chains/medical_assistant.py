@@ -17,25 +17,32 @@ DISCLAIMER = (
 
 def build_medical_chain(llm, *, max_new_tokens: int = 256):
     """
-    Constrói a chain do assistente: PromptTemplate (instrução + input) → LLM.
+    Constrói a chain do assistente: (instruction + input) formatados → LLM.
 
     O formato do prompt segue o usado no treino/avaliação (instruction + input)
     para que o modelo retorne resposta evidence-based e "Decision: yes/no/maybe".
-    """
-    # LangChain 0.3+: prompts em langchain_core; LLMChain substituído por LCEL (prompt | llm)
-    from langchain_core.prompts import PromptTemplate
 
+    Não usa ``langchain_core.prompts`` / ``PromptTemplate``: em Colab algumas
+    versões do LangChain ainda falham com ``No module named 'langchain.prompts'``.
+    """
     instruction = (
         "Based on the following medical literature abstracts, answer the clinical question. "
         "Provide a concise evidence-based answer and state your decision: yes, no, or maybe."
     )
-    template = "{instruction}\n\n{input_text}\n\n"
-    prompt = PromptTemplate(
-        input_variables=["instruction", "input_text"],
-        template=template,
-    )
-    chain = prompt | llm
-    return chain, instruction
+
+    class _MedicalChain:
+        """Compatível com ``chain.invoke({\"instruction\", \"input_text\"})``."""
+
+        __slots__ = ("_llm",)
+
+        def __init__(self, llm_):
+            self._llm = llm_
+
+        def invoke(self, inputs: dict) -> str:
+            text = f"{inputs['instruction']}\n\n{inputs['input_text']}\n\n"
+            return self._llm.invoke(text)
+
+    return _MedicalChain(llm), instruction
 
 
 def ask(
@@ -60,7 +67,7 @@ def ask(
         source_note = " (Resposta sem contexto adicional.)"
 
     out = chain.invoke({"instruction": instruction, "input_text": input_text})
-    # LCEL (prompt|llm) pode retornar str; LLMChain antigo retornava dict com "text"
+    # HuggingFacePipeline / chain customizada: geralmente str; dict legado com "text"
     if isinstance(out, dict):
         response = out.get("text", out.get("output", str(out)))
     elif hasattr(out, "content"):
